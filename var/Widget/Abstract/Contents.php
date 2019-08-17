@@ -149,12 +149,22 @@ class Widget_Abstract_Contents extends Widget_Abstract
     protected function ___summary()
     {
         $content = $this->content;
-        $parts = preg_split("/(<\/\s*(?:p|blockquote|q|pre|table)\s*>)/i", $content, 2, PREG_SPLIT_DELIM_CAPTURE);
+        $parts = preg_split("/(<\/\s*(?:p|blockquote|q|pre|table)\s*>)/i", $content, -1, PREG_SPLIT_DELIM_CAPTURE);
         if (!empty($parts)) {
-            $content = $parts[0] . $parts[1];
+            $content = implode("\n", array_slice($parts, 0, 8));
         }
 
-        return $content;
+        $more = "";
+        if (count($parts) > 8) {
+            ob_start();
+            $this->permalink();
+            $link = ob_get_clean();
+
+            $more = "<a href='{$link}'>Read More</a>";
+        }
+
+
+        return $content . $more;
     }
 
     /**
